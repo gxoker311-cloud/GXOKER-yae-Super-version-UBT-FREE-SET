@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>HRDK UBT - READING TEST (20 Qs)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Pyidaungsu:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', 'Pyidaungsu', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        /* အလန်းစား အလုပ်လုပ်မည့် Dynamic Neon Gradient Background Animation */
+        body { 
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #311042, #0f172a);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #1e293b; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 12px; user-select: none;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .ubt-card { 
+            background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(10px); border-radius: 20px; width: 100%; max-width: 460px; border: 1.5px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 5px 15px rgba(0, 0, 0, 0.2); overflow: hidden; display: flex; flex-direction: column; position: relative; 
+        }
+        
+        /* Game Style Video Intro Layer */
+        #intro-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000000; z-index: 99999;
+            display: flex; justify-content: center; align-items: center; overflow: hidden; cursor: pointer;
+        }
+        #intro-video {
+            width: 100%; height: 100%; object-fit: contain; pointer-events: none;
+        }
+        .intro-hint {
+            position: absolute; bottom: 30px; color: rgba(255, 255, 255, 0.8); font-size: 12px; font-weight: 800; letter-spacing: 1px; animation: pulse 1.5s infinite; text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+
+        .ubt-top-banner {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: #ffffff; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 800;
+        }
+        .header-logo { height: 28px; width: auto; object-fit: contain; background: #ffffff; padding: 2px 6px; border-radius: 4px; }
+        .header-title-text { text-align: center; letter-spacing: 0.5px; flex-grow: 1; font-size: 0.78rem; }
+        .header-banner img { width: 100%; height: auto; display: block; }
+        .title-container { padding: 12px 20px 4px 20px; text-align: center; }
+        .title-text { font-size: 0.85rem; font-weight: 800; line-height: 1.4; color: #1e293b; }
+        .login-bottom-logos {
+            display: flex; justify-content: center; align-items: center; gap: 15px; padding: 5px 20px 15px 20px; border-bottom: 1px solid #f1f5f9; margin-bottom: 5px;
+        }
+        .login-bottom-logos img { height: 32px; width: auto; object-fit: contain; border-radius: 6px; border: 1px solid #e2e8f0; background: #fff; padding: 2px; }
+        #welcome-screen, #exam-ui, #result-screen, #review-screen { width: 100%; display: none; }
+        #welcome-screen { display: block; }
+        .input-group { padding: 8px 20px 10px 20px; }
+        .info-label { font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 5px; }
+        .form-input, .form-select { 
+            width: 100%; padding: 12px 14px; border: 1.5px solid #cbd5e1; border-radius: 12px; font-size: 0.9rem; font-weight: 700; color: #0f172a; outline: none; background: #f8fafc; transition: all 0.2s;
+        }
+        .form-input:focus, .form-select:focus { border-color: #2563eb; background: #ffffff; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+        .action-container { padding: 10px 20px 24px 20px; }
+        .btn-confirm { 
+            width: 100%; padding: 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, #16a34a, #15803d); color: #ffffff; font-size: 0.95rem; font-weight: 900; cursor: pointer; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        }
+        .btn-confirm:hover { background: #15803d; }
+        #exam-ui { padding: 16px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; background: #1e3a8a; color: #ffffff; padding: 10px 16px; border-radius: 10px; margin-bottom: 8px; font-size: 11px; font-weight: 800; }
+        
+        /* ရထားတွဲလို ဖြေးဖြေးချင်း ရွေ့သွားသော စာတန်း (ကျောင်းသား Marquee) */
+        .marquee-container {
+            overflow: hidden; white-space: nowrap; width: 100%; background: #0f172a; color: #38bdf8; padding: 6px 0; border-radius: 6px; margin-bottom: 8px; font-size: 11px; font-weight: 800;
+        }
+        .marquee-text {
+            display: inline-block; padding-left: 100%; animation: marquee 14s linear infinite;
+        }
+        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+
+        .timer-badge { padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 900; background: rgba(255, 255, 255, 0.2); }
+        .progress-box { width: 100%; height: 6px; background: #e2e8f0; border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 100%; background: #2563eb; transition: width 1s linear; }
+        .q-palette { display: flex; gap: 4px; justify-content: center; margin-bottom: 12px; flex-wrap: wrap; }
+        .q-dot { width: 26px; height: 26px; border-radius: 6px; border: 1px solid #cbd5e1; display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 800; cursor: pointer; background: #fff; color: #64748b; }
+        .q-dot.active { border-color: #2563eb; background: #2563eb; color: #ffffff; }
+        .q-dot.done { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+        .q-text { font-size: 13.5px; font-weight: 700; margin-bottom: 14px; line-height: 1.6; background: #f8fafc; padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0; color: #0f172a; white-space: pre-line; position: relative; }
+        .watermark { position: absolute; top: 10px; right: 10px; width: 50px; height: 50px; border-radius: 50%; opacity: 0.15; pointer-events: none; }
+        
+        /* မေးခွန်း (၅) အတွက် အရောင်ပြေး Effect ပါသော အောက်လိုင်းတားထားသည့် Style */
+        @keyframes textGradient {
+            0% { color: #dc2626; border-bottom-color: #2563eb; }
+            33% { color: #9333ea; border-bottom-color: #db2777; }
+            66% { color: #2563eb; border-bottom-color: #16a34a; }
+            100% { color: #dc2626; border-bottom-color: #2563eb; }
+        }
+        .q-text ins, .review-opt ins {
+            font-weight: 900;
+            text-decoration: none;
+            border-bottom: 3px solid;
+            animation: textGradient 4s linear infinite;
+            padding: 0 3px;
+        }
+
+        .exam-img-wrap { text-align: center; margin-bottom: 10px; }
+        .exam-img { width: 100%; max-height: 160px; object-fit: contain; border-radius: 8px; cursor: zoom-in; border: 1px solid #cbd5e1; background: #fff; }
+        .img-hint { font-size: 10px; color: #0284c7; font-weight: 800; margin-top: 3px; }
+        #img-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 9999; justify-content: center; align-items: center; padding: 20px; cursor: zoom-out;
+        }
+        #img-modal img { max-width: 95%; max-height: 90vh; border-radius: 8px; }
+        .answer-zone { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+        .opt-item { background: #fff; border: 1.5px solid #cbd5e1; padding: 12px 14px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; font-size: 12.5px; font-weight: 700; transition: all 0.15s ease; }
+        .opt-item:hover { border-color: #2563eb; background: #f0fdfa; }
+        .opt-item.active { background: #eff6ff; border-color: #2563eb; color: #1d4ed8; font-weight: 800; }
+        .opt-num { width: 22px; height: 22px; border: 1.5px solid currentColor; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-size: 11px; flex-shrink: 0; }
+        .nav-controls { display: flex; gap: 8px; margin-bottom: 10px; }
+        .btn-nav { flex: 1; padding: 11px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .btn-submit { background: #1e3a8a; color: #ffffff; border: none; padding: 13px; border-radius: 10px; font-size: 13px; font-weight: 900; cursor: pointer; width: 100%; }
+        .result-hud { padding: 16px 20px; display: flex; flex-direction: column; align-items: center; }
+        .final-res-title { font-size: 1.2rem; font-weight: 900; color: #1e3a8a; margin-bottom: 12px; letter-spacing: 1px; }
+        .res-table { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 16px; }
+        .res-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 12.5px; font-weight: 700; border-bottom: 1px dashed #cbd5e1; }
+        .res-row:last-child { border-bottom: none; }
+        .res-label { color: #64748b; } .res-val { color: #0f172a; font-weight: 800; }
+        .score-circle { width: 90px; height: 90px; border-radius: 50%; background: #eff6ff; border: 4px solid #2563eb; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 14px; }
+        .score-num { font-size: 1.4rem; font-weight: 900; color: #1d4ed8; line-height: 1; }
+        .score-lbl { font-size: 0.6rem; font-weight: 800; color: #64748b; margin-top: 2px; }
+        .res-action-grid { display: flex; gap: 8px; width: 100%; }
+        .btn-compact-res { flex: 1; padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 900; cursor: pointer; text-align: center; border: none; }
+        .btn-review-mini { background: #1e3a8a; color: #ffffff; width: 100%; }
+        .btn-restart-mini { background: #2563eb; color: #ffffff; width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="intro-screen" onclick="startAppWithAudio()">
+        <video id="intro-video" playsinline preload="auto">
+            <source src="https://files.catbox.moe/1eantk.mp4" type="audio/mp4">
+        </video>
+        <div class="intro-hint">🔊 စာမေးပွဲစတင်ရန် ဤနေရာကို နှိပ်ပါ (Tap anywhere to start)</div>
+    </div>
+
+    <div id="img-modal" onclick="closeImageModal()">
+        <img id="modal-img-element" src="" alt="Zoomed Image">
+    </div>
+
+    <div class="ubt-card">
+        <div id="welcome-screen">
+            <div class="ubt-top-banner">
+                <img src="https://i.imgur.com/WA5hd3D.jpeg" alt="Gxoker Logo" class="header-logo">
+                <span class="header-title-text">HRDK UBT - READING TEST </span>
+                <img src="https://i.imgur.com/WA5hd3D.jpeg" alt="Gxoker Logo" class="header-logo">
+            </div>
+            <div class="header-banner"><img src="https://i.imgur.com/fq28vPm.jpeg" alt="Banner"></div>
+            <div class="title-container"><div class="title-text">Created By Gxoker EPS-TOPIK 읽기 FREE SET</div></div>
+            <div class="login-bottom-logos">
+                <img src="https://i.imgur.com/WA5hd3D.jpeg" alt="Gxoker">
+                <img src="https://i.imgur.com/WA5hd3D.jpeg" alt="Gxoker">
+            </div>
+            <div class="input-group">
+                <div class="info-label">NAME (အမည်)</div>
+                <input type="text" id="username-field" class="form-input" placeholder="သင့်နာမည်..." autocomplete="off">
+            </div>
+            <div class="input-group">
+                <div class="info-label">PASSPORT (နိုင်ငံကူးလက်မှတ်)</div>
+                <input type="text" id="passport-field" class="form-input" placeholder="ဥပမာ- MH-3568**" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <div class="info-label">SECTOR (လုပ်ငန်းခွင်)</div>
+                <select id="sector-field" class="form-select">
+                    <option value="Manufacturing (제조업)">Manufacturing (제조업) - ထုတ်လုပ်ရေး</option>
+                    <option value="Agriculture (농축산업)">Agriculture (농축산업) - စိုက်ပျိုးမွေးမြူရေး</option>
+                    <option value="Construction (건설업)">Construction (건설업) - ဆောက်လုပ်ရေး</option>
+                    <option value="Fishery (어업)">Fishery (어업) - ရေလုပ်ငန်း</option>
+                    <option value="Service (서비스업)">Service (서비스업) - ဝန်ဆောင်မှုလုပ်ငန်း</option>
+                </select>
+            </div>
+            <div class="action-container"><button class="btn-confirm" onclick="triggerExam()">CONFIRM & START</button></div>
+        </div>
+
+        <div id="exam-ui">
+            <div class="ubt-top-banner" style="margin-bottom: 6px; border-radius: 8px;">
+                <img src="https://i.imgur.com/WA5hd3D.jpeg" alt="Gxoker Logo" class="header-logo">
+                <span class="header-title-text">HRDK UBT READING EXAM</span>
+                <img src="https://i.imgur.com/WA5hd3D.jpeg" alt="Gxoker Logo" class="header-logo">
+            </div>
+            
+            <div class="marquee-container">
+                <div class="marquee-text">✨ Created By Gxoker စနစ်သစ်မေးခွန်းအတန်း - HRDK EPS-TOPIK UBT Reading Examination ✨</div>
+            </div>
+
+            <div class="top-bar">
+                <div id="header-user-info">User | Sector</div>
+                <div class="timer-badge">⏱️ <span id="timer">20:00</span></div>
+            </div>
+            <div class="progress-box"><div class="progress-fill" id="p-bar"></div></div>
+            <div class="q-palette" id="palette"></div>
+            <div class="q-text" id="q-text">Loading...</div>
+            <div class="answer-zone" id="ans-list"></div>
+            <div class="nav-controls">
+                <button class="btn-nav" onclick="prevQ()">‹ ရှေ့သို့</button>
+                <button class="btn-nav" onclick="nextQ()">နောက်သို့ ›</button>
+            </div>
+            <button class="btn-submit" onclick="finishExam()">SUBMIT (အဖြေတင်သွင်းမည်)</button>
+        </div>
+
+        <div id="result-screen">
+            <div class="ubt-top-banner">
+                <img src="https://i.imgur.com/WA5hd3D.jpeg" alt="Gxoker Logo" class="header-logo" style="height:35px; border-radius:8px;">
+                <span class="header-title-text" style="font-size: 0.95rem; font-weight: 900;">CREATED BY GXOKER</span>
+                <img src="https://i.imgur.com/WA5hd3D.jpeg" alt="Gxoker Logo" class="header-logo" style="height:35px; border-radius:8px;">
+            </div>
+            <div class="result-hud">
+                <div class="final-res-title">EXAM RESULT SUMMARY</div>
+                <div class="score-circle">
+                    <div class="score-num" id="res-score">0</div>
+                    <div class="score-lbl">မှတ် (100)</div>
+                </div>
+                <div class="res-table">
+                    <div class="res-row"><span class="res-label">အမည် (Name):</span><span class="res-val" id="res-name">-</span></div>
+                    <div class="res-row"><span class="res-label">Passport:</span><span class="res-val" id="res-passport">-</span></div>
+                    <div class="res-row"><span class="res-label">Sector:</span><span class="res-val" id="res-sector">-</span></div>
+                    <div class="res-row"><span class="res-label">အမှန် (Correct):</span><span class="res-val" id="res-acc">0 / 20</span></div>
+                    <div class="res-row"><span class="res-label">ကြာမြင့်ချိန်:</span><span class="res-val" id="res-time">00:00</span></div>
+                </div>
+                <div class="res-action-grid">
+                    <button class="btn-compact-res btn-review-mini" onclick="showReview()">🔍 အဖြေစစ်ရန်</button>
+                </div>
+                <div class="res-action-grid" style="margin-top: 8px;">
+                    <button class="btn-compact-res btn-restart-mini" onclick="location.reload()">🔄 ပြန်လည်ဖြေဆိုရန်</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="review-screen">
+            <div class="ubt-top-banner">
+                <img src="https://i.imgur.com/WA5hd3D.jpeg" alt="Gxoker Logo" class="header-logo">
+                <span class="header-title-text">Created By Gxoker - REVIEW MODE</span>
+                <img src="https://i.imgur.com/WA5hd3D.jpeg" alt="Gxoker Logo" class="header-logo">
+            </div>
+            <div id="review-content" style="padding: 12px; max-height: 70vh; overflow-y: auto;"></div>
+            <div class="action-container" style="padding: 10px 12px 12px 12px;"><button class="btn-submit" onclick="closeReview()">ရလဒ်စာရွက်သို့ ပြန်သွားမည်</button></div>
+        </div>
+    </div>
+        <script>
+    const allQuestions = [
+        {
+            q: "[1-2] 다음 그림을 보고 맞는 단어나 문장을 고르십시오.\n\n1. <div class='exam-img-wrap'><img src='https://i.imgur.com/JkTm4fI.jpeg' class='exam-img' onclick='openImageModal(this.src)'><div class='img-hint'>🔍 (ပုံကိုနှိပ်၍ ချဲ့ကြည့်နိုင်သည်)</div></div><img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["결속 작업", "타설 작업", "배근 준비", "거푸집을 설치"], c: 3
+        },
+        {
+            q: "2. <div class='exam-img-wrap'><img src='https://i.imgur.com/Wk71LZL.jpeg' class='exam-img' onclick='openImageModal(this.src)'><div class='img-hint'>🔍 (ပုံကိုနှိပ်၍ ချဲ့ကြည့်နိုင်သည်)</div></div><img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["물을 뺐습니다", "물을 뿌렸습니다", "균열이 생겼습니다", "누수가 발생했습니다"], c: 3
+        },
+        {
+            q: "3. 다음 그림과 관계있는 내용은 무엇입니까?\n\n<div class='exam-img-wrap'><img src='https://i.imgur.com/9MFOJCh.jpeg' class='exam-img' onclick='openImageModal(this.src)'><div class='img-hint'>🔍 (ပုံကိုနှိပ်၍ ချဲ့ကြည့်နိုင်သည်)</div></div><img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["지게차 - 모래를 운반해요", "로더 - 모래를 들어 올려 실어요", "로더 - 제품을 들어 올려 운반해요", "지게차 - 제품을 들어 올려 운반해요"], c: 1
+        },
+        {
+            q: "4. 다음 그림과 관계있는 내용은 무엇입니까?\n\n<div class='exam-img-wrap'><img src='https://i.imgur.com/5gvHVHb.jpeg' class='exam-img' onclick='openImageModal(this.src)'><div class='img-hint'>🔍 (ပုံကိုနှိပ်၍ ချဲ့ကြည့်နိုင်သည်)</div></div><img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["호스 - 결속해요", "결속선 - 결속해요", "호스 - 물을 뿌려요", "결속선 - 토사를 처리해요"], c: 2
+        },
+        {
+            q: "5. 다음 중 밑줄 친 부분이 맞는 문장을 고르십시오.\n\n① 그 사람 벌써 <ins>갔을 걸요.</ins>\n② 비가 <ins>와 텐데</ins> 우산을 챙기세요.\n③ 균열이 생겼으니까 관을 <ins>바꿔겠어요.</ins>\n④ 관을 연결한 후에 흙으로 <ins>채우야 해요.</ins>\n<img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["그 사람 벌써 갔을 걸요.", "비가 와 텐데 우산을 챙기세요.", "균열이 생겼으니까 관을 바꿔겠어요.", "관을 연결한 후에 흙으로 채우야 해요."], c: 0
+        },
+        {
+            q: "6. 다음 단어와 반대한 말을 고르십시오.\n\n[ 생기다 ]\n<img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["철거하다", "사라지다", "체결하다", "복잡하다"], c: 1
+        },
+        {
+            q: "7. 다음 내용과 관계있는 그림을 고르십시오.\n\n포장 장비입니다.\n<div class='exam-img-wrap'><img src='https://i.imgur.com/QlblLyx.jpeg' class='exam-img' onclick='openImageModal(this.src)'><div class='img-hint'>🔍 (ပုံကိုနှိပ်၍ ချဲ့ကြည့်နိုင်သည်)</div></div><img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["①", "②", "③", "④"], c: 1
+        },
+        {
+            q: "8. 다음 내용과 관계있는 그림을 고르십시오.\n\n관을 배치합니다.\n<div class='exam-img-wrap'><img src='https://i.imgur.com/3NWQNLq.jpeg' class='exam-img' onclick='openImageModal(this.src)'><div class='img-hint'>🔍 (ပုံကိုနှိပ်၍ ချဲ့ကြည့်နိုင်သည်)</div></div><img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["①", "②", "③", "④"], c: 2
+        },
+        {
+            q: "[9-12] 빈칸에 들어갈 가장 알맞은 것을 고르십시오.\n\n9. 콘크리트를 붓기 전에 먼저 ______ 작업을 해야 합니다.\n<img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["보관", "고압", "타설", "배근"], c: 3
+        },
+        {
+            q: "10. 준설 작업을 할 때 침전물이 많으면 흡입 호스로 ______ 겠어요.\n<img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["뿌리면", "미뤄야", "퍼내면", "빨아들여야"], c: 3
+        },
+        {
+            q: "11. 가: 밖에 눈이 내렸어요?\n나: 네, 밖에 나가면 ______ 옷을 따뜻하게 입으세요.\n<img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["더울걸요", "더울 텐데", "추울 텐데", "더러울걸요"], c: 2
+        },
+        {
+            q: "12. 하천 정비를 할 때는 물이 고이지 않게, 물이 잘 ______ 주변의 흙을 깎아야 합니다.\n<img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["뿌리도록", "흐르도록", "뿌리면서", "흐르면서"], c: 1
+        },
+        {
+            q: "13. 다음 안내문을 보고 내용과 같은 것을 고르십시오.\n\n<div class='exam-img-wrap'><img src='https://i.imgur.com/aMDnq4t.jpeg' class='exam-img' onclick='openImageModal(this.src)'><div class='img-hint'>🔍 (ပုံကိုနှိပ်၍ ချဲ့ကြည့်နိုင်သည်)</div></div><img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["제일 먼저 타설 작업을 합니다", "마지막으로 철근을 배근합니다", "배근을 하고 나서 바로 타설을 합니다", "타설하기 전에 결속 작업을 해야 합니다"], c: 3
+        },
+        {
+            q: "14. 다음 그래프를 보고 내용과 같은 것을 고르십시오.\n\n<div class='exam-img-wrap'><img src='https://i.imgur.com/x1c9Nl0.jpeg' class='exam-img' onclick='openImageModal(this.src)'><div class='img-hint'>🔍 (ပုံကိုနှိပ်၍ ချဲ့ကြည့်နိုင်သည်)</div></div><img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["시멘트가 제일 많이 필요합니다", "모래보다 자갈이 덜 필요합니다", "모래보다 물이 더 많이 필요합니다", "자갈이 전체의 절반 이상을 차지합니다"], c: 3
+        },
+        {
+            q: "[15-16] 다음 설명에 알맞은 어휘를 고르십시오.\n\n15. 이 중장비는 도로를 평평하게 만들 때 사용합니다. 땅바닥을 고르거나 정리하는 데 사용하는 장비입니다.\n<img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["로더", "롤러", "굴착기", "그레이더"], c: 3
+        },
+        {
+            q: "16. 흙과 모래를 함께 이르는 말입니다. 주로 비가 많이 올 때 산지에서 이 것이 자주 발생하며 도로와 공사 현장에 큰 영향을 미칩니다.\n<img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["호스", "토사", "시멘트", "거푸집"], c: 1
+        },
+        {
+            q: "[17-18] 다음 글을 읽고 무엇에 대한 글인지 고르십시오.\n\n17. 제일 먼저 땅을 파고, 상수도관과 하수도관을 구분하여 배치합니다. 관을 배치한 후에는 연결합니다. 누수가 없는지 점검하고, 이상이 없으면 땅을 흙으로 채웁니다. 마지막으로 포장 장비로 일을 마무리합니다.\n<img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["상하수도 시공 절차", "상하수도 관련 안전 교육", "상하수도 누수 수리 방법", "상하수도 요금 납부 방법"], c: 0
+        },
+        {
+            q: "18. 땅을 파 데는 굴착기를 사용하고, 무거운 자재를 옮길 때는 크레인이 필요합니다. 덤프트럭은 파낸 흙이나 자재를 운반할 때 사용됩니다. 그리고 아스팔트 혼합물을 도로 표면에 뿌릴 때 아스팔트 살포기를 사용 합니다.\n<img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["대규모 토목 공사", "건설 현장의 중장비", "건설 자재 보관 방법", "준설할 때 사용하는 장비"], c: 1
+        },
+        {
+            q: "[19-20] 다음 글을 읽고 내용과 같은 것을 고르십시오.\n\n19. 건설 현장에서는 여러 가지 중장비가 사용됩니다. 땅을 밀어서 평평하게 만드는 불도저, 흙이나 자재를 실어 나르는 덤프트럭, 그리고 건물의 바닥과 벽을 만들기 위해 콘크리트를 섞는 콘크리트 믹서 트럭이 대표 적입니다. 이 중장비들은 공사를 빠르고 효율적으로 하기 위해 꼭 필요합니다.\n<img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["불도저는 콘크리트를 섞는 중장비입니다", "덤프트럭은 자재를 실어 나를 수 있습니다", "콘크리트 믹서 트럭은 땅을 밀어서 고릅니다", "건설 현장에서는 중장비를 사용할 수 없습니다"], c: 1
+        },
+        {
+            q: "20. 한국에서는 여러 대규모 토목 공사가 이루어졌습니다. 그 중 하나는 인천국제공항을 건설하는 것이었습니다. 이 공항은 바다를 메워 만든 인공섬에 지어진 큰 공항으로, 이를 연결하기 위해 인천대교가 만들어졌습니다. 또 하나의 예는 부산과 거제를 연결하는 거가대교입니다. 이 교량은 다리뿐 아니라 바다 아래를 지나는 육상 터널로도 연결되어 있습니다\n<img src='https://i.imgur.com/WA5hd3D.jpeg' class='watermark'>",
+            a: ["인천국제공항은 산속에 만들어졌습니다", "거가대교는 전부 바다 위에 지어진 다리입니다", "인천국제공항은 작은 규모로 빠르게 지어졌다", "부산하고 거제는 대규모 토목 공사로 이루어졌다"], c: 3
+        }
+    ];
+          let currentIndex = 0;
+    let userAns = [];
+    let studentName = "";
+    let studentPassport = "";
+    let studentSector = "";
+    let totalSeconds = 20 * 60;
+    let initialSeconds = totalSeconds;
+    let timerInterval = null;
+
+    function triggerExam() {
+        const nameInput = document.getElementById("username-field").value.trim();
+        const passportInput = document.getElementById("passport-field").value.trim();
+        const sectorInput = document.getElementById("sector-field").value;
+
+        if (!nameInput || !passportInput) {
+            alert("ကျေးဇူးပြု၍ နာမည်နှင့် Passport ကို ထည့်သွင်းပေးပါ။");
+            return;
+        }
+
+        studentName = nameInput;
+        studentPassport = passportInput;
+        studentSector = sectorInput;
+        userAns = Array(allQuestions.length).fill(null);
+
+        document.getElementById("welcome-screen").style.display = "none";
+        document.getElementById("exam-ui").style.display = "block";
+        
+        document.getElementById("header-user-info").textContent = `${studentName} | ${sectorInput.split(' ')[0]}`;
+
+        renderPalette();
+        loadQuestion(0);
+        startTimer();
+    }
+
+    function startTimer() {
+        const tEl = document.getElementById("timer");
+        timerInterval = setInterval(() => {
+            totalSeconds--;
+            let mins = Math.floor(totalSeconds / 60);
+            let secs = totalSeconds % 60;
+            tEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            
+            let percent = (totalSeconds / initialSeconds) * 100;
+            document.getElementById("p-bar").style.width = percent + "%";
+
+            if (totalSeconds <= 0) {
+                clearInterval(timerInterval);
+                finishExam();
+            }
+        }, 1000);
+    }
+
+    function renderPalette() {
+        const pal = document.getElementById("palette");
+        pal.innerHTML = "";
+        allQuestions.forEach((_, idx) => {
+            const dot = document.createElement("div");
+            dot.className = `q-dot ${idx === currentIndex ? 'active' : ''} ${userAns[idx] !== null ? 'done' : ''}`;
+            dot.textContent = idx + 1;
+            dot.onclick = () => loadQuestion(idx);
+            pal.appendChild(dot);
+        });
+    }
+
+    function loadQuestion(idx) {
+        currentIndex = idx;
+        document.getElementById("q-text").innerHTML = allQuestions[currentIndex].q;
+
+        const ansList = document.getElementById("ans-list");
+        ansList.innerHTML = "";
+        allQuestions[currentIndex].a.forEach((opt, optIdx) => {
+            const item = document.createElement("div");
+            item.className = `opt-item ${userAns[currentIndex] === optIdx ? 'active' : ''}`;
+            item.innerHTML = `<span class="opt-num">${optIdx + 1}</span> <span>${opt}</span>`;
+            item.onclick = () => selectOption(optIdx);
+            ansList.appendChild(item);
+        });
+        renderPalette();
+    }
+
+    function selectOption(optIdx) {
+        userAns[currentIndex] = optIdx;
+        loadQuestion(currentIndex);
+    }
+
+    function prevQ() { if (currentIndex > 0) loadQuestion(currentIndex - 1); }
+    function nextQ() { if (currentIndex < allQuestions.length - 1) loadQuestion(currentIndex + 1); }
+
+    function openImageModal(imgSrc) {
+        const modal = document.getElementById("img-modal");
+        document.getElementById("modal-img-element").src = imgSrc;
+        modal.style.display = "flex";
+    }
+
+    function closeImageModal() {
+        document.getElementById("img-modal").style.display = "none";
+    }
+
+    function finishExam() {
+        let answeredCount = userAns.filter(ans => ans !== null).length;
+        if (answeredCount < allQuestions.length) {
+            if (!confirm(`မဖြေရသေးသော မေးခွန်းများ ကျန်ရှိနေပါသည်။ တင်သွင်းရန် သေချာပါသလား?`)) return;
+        }
+
+        clearInterval(timerInterval);
+        
+        let correctCount = 0;
+        allQuestions.forEach((item, i) => {
+            if (userAns[i] === item.c) correctCount++;
+        });
+
+        const finalScore = correctCount * 5;
+        
+        const timeUsedSec = initialSeconds - totalSeconds;
+        const usedMins = Math.floor(timeUsedSec / 60);
+        const usedSecs = timeUsedSec % 60;
+        const timeStr = `${usedMins.toString().padStart(2, '0')}m ${usedSecs.toString().padStart(2, '0')}s`;
+
+        document.getElementById("exam-ui").style.display = "none";
+        document.getElementById("result-screen").style.display = "block";
+        
+        document.getElementById("res-score").textContent = finalScore;
+        document.getElementById("res-name").textContent = studentName;
+        document.getElementById("res-passport").textContent = studentPassport;
+        document.getElementById("res-sector").textContent = studentSector;
+        document.getElementById("res-acc").textContent = `${correctCount} / 20 (${finalScore} မှတ်)`;
+        document.getElementById("res-time").textContent = timeStr;
+    }
+
+    function showReview() {
+        document.getElementById("result-screen").style.display = "none";
+        const reviewContainer = document.getElementById("review-screen");
+        const reviewContent = document.getElementById("review-content");
+        reviewContent.innerHTML = "";
+
+        allQuestions.forEach((item, idx) => {
+            const userPick = userAns[idx];
+            const isCorrect = userPick === item.c;
+            const card = document.createElement("div");
+            card.className = "review-card";
+            card.style.background = "#f8fafc";
+            card.style.border = "1px solid #e2e8f0";
+            card.style.borderRadius = "12px";
+            card.style.padding = "12px";
+            card.style.marginBottom = "10px";
+
+            let optsHTML = "";
+            item.a.forEach((opt, optIdx) => {
+                let optStyle = "padding:6px 10px; border-radius:6px; font-size:11px; margin-bottom:3px; display:flex; justify-content:space-between; border:1px solid #e2e8f0; background:#fff;";
+                let badge = "";
+                if (optIdx === item.c) {
+                    optStyle += " background:#dcfce7; border-color:#22c55e; color:#15803d; font-weight:800;";
+                    badge = `<span style="background:#22c55e; color:#fff; font-size:9px; padding:2px 5px; border-radius:4px;">အဖြေမှန်</span>`;
+                } else if (optIdx === userPick && !isCorrect) {
+                    optStyle += " background:#fee2e2; border-color:#ef4444; color:#b91c1c; font-weight:800;";
+                    badge = `<span style="background:#ef4444; color:#fff; font-size:9px; padding:2px 5px; border-radius:4px;">သင့်အဖြေ</span>`;
+                }
+                optsHTML += `<div style="${optStyle}"><span>${optIdx + 1}. ${opt}</span>${badge}</div>`;
+            });
+
+            card.innerHTML = `
+                <div style="font-size:12px; font-weight:700; color:#0f172a; margin-bottom:6px;">မေးခွန်း ${idx + 1} (5 မှတ်)။<br>${item.q}</div>
+                <div>${optsHTML}</div>
+            `;
+            reviewContent.appendChild(card);
+        });
+        reviewContainer.style.display = "block";
+    }
+
+    function closeReview() {
+        document.getElementById("review-screen").style.display = "none";
+        document.getElementById("result-screen").style.display = "block";
+    }
+    </script>
+</body>
+</html>
